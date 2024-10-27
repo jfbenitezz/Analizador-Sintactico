@@ -1,4 +1,6 @@
+const fs = require('fs');
 const regexSimbolo = /[A-Z]'?|\(|\)|\+|\*|i|&/g;
+
 function validarExp(exp, dic) {
     exp = exp.replace(/\s/g, "");  // Remove spaces
   
@@ -205,8 +207,6 @@ function construirTablaM(gramatica, primero, siguiente) {
 
 
  /*************************************************************/
- const fs = require('fs');
-
 function leerArchivoM(filePath) {
   const data = fs.readFileSync(filePath, 'utf-8');
   const lines = data.split('\n');
@@ -253,10 +253,7 @@ function leerArchivoM(filePath) {
   }
 }
 
-// Example usage
-const archivo = './archivo.txt';
-leerArchivoM(archivo);
-
+export { leerArchivoM };
 
 
 
