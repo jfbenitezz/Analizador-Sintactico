@@ -49,11 +49,7 @@ const AnalyzerPage = () => {
     const siguientesCalculated = calcularSiguiente(gramatica, Object.keys(gramatica)[0]);
     setSiguientes(siguientesCalculated);
 
-    // 6. Construct `M Table`
-    const mTableCalculated = construirTablaM(gramatica, primerosCalculated, siguientesCalculated);
-    setMTable(mTableCalculated);
-
-    // 7. Determine terminal order based on grammar appearance
+    // 6. Determine terminal order based on grammar appearance
     const terminalOrderCalculated = [];
     for (const productions of Object.values(gramatica)) {
       for (const production of productions) {
@@ -65,7 +61,12 @@ const AnalyzerPage = () => {
         }
       }
     }
+    terminalOrderCalculated.push(`$`);
     setTerminalOrder(terminalOrderCalculated);
+
+    // 7. Construct `M Table`
+    const mTableCalculated = construirTablaM(gramatica, primerosCalculated, siguientesCalculated, terminalOrderCalculated);
+    setMTable(mTableCalculated);
   };
 
   return (

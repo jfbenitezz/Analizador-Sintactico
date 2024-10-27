@@ -14,7 +14,7 @@ const MTable = ({ mData, terminalOrder }) => {
       <table className="min-w-full border-collapse border border-gray-200">
         <thead>
           <tr>
-            <th className="p-2 border border-gray-300 bg-blue-200">No Term</th>
+            <th className="p-2 border border-gray-300 bg-blue-200">Vacío</th>
             {terminals.map(terminal => (
               <th key={terminal} className="p-2 border border-gray-300 bg-blue-200">
                 {terminal}
