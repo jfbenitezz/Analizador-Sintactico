@@ -54,14 +54,15 @@ const AnalyzerPage = () => {
     for (const productions of Object.values(gramatica)) {
       for (const production of productions) {
         for (const char of production) {
+          const regexNonTerminal = /[^A-Z'&]/
           // Check each character in the production to see if it's a terminal
-          if (!/[A-Z]/.test(char) && !terminalOrderCalculated.includes(char)) { // Ensure only terminals are added
+          if (regexNonTerminal.test(char) && !terminalOrderCalculated.includes(char)) { // Ensure only terminals are added
             terminalOrderCalculated.push(char);
           }
         }
       }
     }
-    terminalOrderCalculated.push(`$`);
+    terminalOrderCalculated.push(`$`); // Add the end symbol
     setTerminalOrder(terminalOrderCalculated);
 
     // 7. Construct `M Table`

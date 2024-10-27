@@ -162,38 +162,43 @@ function calcularPrimeroProduccion(gramatica, produccion, primeros) {
 }
 
 
-// Function to build the parsing table `M`
-function construirTablaM(gramatica, primero, siguiente) {
+// Function to build the parsing table `M`// Function to build the parsing table `M`
+function construirTablaM(gramatica, primero, siguiente, terminales) {
   const tablaM = {};
 
+  // Initialize `tablaM` with all terminals and end symbol `$`
   for (const noTerminal in gramatica) {
-    // Initialize `tablaM` entry for each non-terminal
     tablaM[noTerminal] = {};
+    terminales.forEach((terminal) => {
+      tablaM[noTerminal][terminal] = ''; // Initialize each terminal as an empty string
+    });
+    tablaM[noTerminal]['$'] = ''; // End-of-input symbol
+  }
 
-    // Process each production for the non-terminal
+  // Process each production for the non-terminal
+  for (const noTerminal in gramatica) {
     gramatica[noTerminal].forEach((produccion) => {
       // Calculate `PRIMERO` for the production
       const conjuntoPrimero = calcularPrimeroProduccion(gramatica, produccion, primero);
 
       // Add production to `M[noTerminal, terminal]` for each terminal in `PRIMERO`
       conjuntoPrimero.forEach((terminal) => {
-        if (terminal !== '&') {  // Ignore epsilon
-          // Only add if the entry does not already exist
+        if (terminal !== '&') { // Ignore epsilon
           if (!tablaM[noTerminal][terminal]) {
             tablaM[noTerminal][terminal] = produccion;
           } else {
-            console.log(`Conflicto en M[${noTerminal}, ${terminal}]`);
+            console.log(`Conflicto en M[${noTerminal}, ${terminal}] - ya existe ${tablaM[noTerminal][terminal]}`);
           }
         }
       });
 
-      // If epsilon (`&`) is in `PRIMERO`, use `SIGUIENTE` to add the production
+      // If epsilon (`&`) is in `PRIMERO`, use `SIGUIENTE` to add the empty production
       if (conjuntoPrimero.has('&')) {
         siguiente[noTerminal].forEach((terminal) => {
           if (!tablaM[noTerminal][terminal]) {
-            tablaM[noTerminal][terminal] = produccion;
+            tablaM[noTerminal][terminal] = '&'; // Explicit empty production for epsilon
           } else {
-            console.log(`Conflicto en M[${noTerminal}, ${terminal}]`);
+            console.log(`Conflicto en M[${noTerminal}, ${terminal}] - ya existe ${tablaM[noTerminal][terminal]}`);
           }
         });
       }
@@ -202,55 +207,7 @@ function construirTablaM(gramatica, primero, siguiente) {
 
   return tablaM;
 }
-
-
-
  /*************************************************************/
-function leerArchivoM(filePath) {
-  const data = fs.readFileSync(filePath, 'utf-8');
-  const lines = data.split('\n');
-  let dic = {};
-
-  lines.forEach((line) => {
-    line = line.trim();
-    dic = validarExp(line, dic);  // Assuming `validarExp` is defined elsewhere
-  });
-
-  const gramatica = eliminarRecursividadPorIzquierda(dic);  // Assuming this function is defined
-  console.log(gramatica);
-
-  // Display modified grammar
-  for (const [noTerminal, producciones] of Object.entries(gramatica)) {
-    console.log(`${noTerminal} → ${producciones.join(' | ')}`);
-  }
-
-  // Calculate FIRST and FOLLOW sets
-  const primero = {};
-  for (const nt in gramatica) {
-    primero[nt] = calcularPrimero(gramatica, nt, {});  // Assuming `calcularPrimero` is defined
-  }
-  console.log(gramatica);
-
-  const siguiente = calcularSiguiente(gramatica, Object.keys(gramatica)[0]);  // Assuming `calcularSiguiente` is defined
-  console.log();
-
-  // Display results
-  for (const nt in primero) {
-    console.log(`PRIMERO(${nt}) = ${primero[nt]}`);
-  }
-  console.log();
-  for (const nt in siguiente) {
-    console.log(`SIGUIENTE(${nt}) = ${siguiente[nt]}`);
-  }
-
-  // Construct and display M table
-  const tablaM = construirTablaM(gramatica, primero, siguiente);
-  for (const [noTerminal, terminalMap] of Object.entries(tablaM)) {
-    for (const [terminal, produccion] of Object.entries(terminalMap)) {
-      console.log(`M[${noTerminal}, ${terminal}] = ${produccion}`);
-    }
-  }
-}
 
 export { validarExp, eliminarRecursividadPorIzquierda, calcularPrimero, calcularSiguiente, construirTablaM  };
 
