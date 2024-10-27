@@ -1,8 +1,12 @@
+import AnalyzerPage from './pages/AnalyzerPage'
 function App() {
   return (
-    <>
-    <h1 className=" text-3xl flex justify-center font-bold underline">Hello World</h1>
-  </>
+    <div className="App">
+      <header className="App-header">
+        <AnalyzerPage />
+      </header>
+    </div>
+
   )
 }
 

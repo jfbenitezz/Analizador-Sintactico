@@ -1,4 +1,3 @@
-const fs = require('fs');
 const regexSimbolo = /[A-Z]'?|\(|\)|\+|\*|i|&/g;
 
 function validarExp(exp, dic) {
@@ -253,7 +252,7 @@ function leerArchivoM(filePath) {
   }
 }
 
-export { leerArchivoM };
+export { validarExp, eliminarRecursividadPorIzquierda, calcularPrimero, calcularSiguiente, construirTablaM  };
 
 
 
