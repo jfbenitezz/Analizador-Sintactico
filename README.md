@@ -5,9 +5,6 @@ This project is a grammar analyzer built in React, designed to parse context-fre
 ### GitHub Pages Link
 
 You can access the live version of the project [here](https://jfbenitezz.github.io/Analizador-Sintactico/).
-
-Replace `your-username` and `your-repository-name` with your actual GitHub username and repository name.
-
 ---
 
 ## Features
