@@ -3,7 +3,9 @@ import FileUpload from '../components/fileUpload';
 import PrimerosTable from '../components/PrimerosTable';
 import SiguientesTable from '../components/SiguientesTable';
 import MTable from '../components/MTable';
+import ASDTable from '../components/ASDTable';
 import { validarExp, eliminarRecursividadPorIzquierda, calcularPrimero, calcularSiguiente, construirTablaM } from '../logic/functions'; 
+import {ASD} from '../logic/ASDChecker';
 
 const AnalyzerPage = () => {
   const [fileContent, setFileContent] = useState('');
@@ -13,6 +15,8 @@ const AnalyzerPage = () => {
   const [siguientes, setSiguientes] = useState({});
   const [mTable, setMTable] = useState({});
   const [terminalOrder, setTerminalOrder] = useState([]);  // Terminal order based on grammar appearance
+  const [inputString, setInputString] = useState(''); // Entry string for ASD analysis
+  const [parsingResults, setParsingResults] = useState([]);
 
   const formatGrammar = (grammar) => {
     return Object.entries(grammar)
@@ -70,6 +74,12 @@ const AnalyzerPage = () => {
     setMTable(mTableCalculated);
   };
 
+  const handleAnalyze = () => {
+   //8. Analyze the input string with the `ASD` function
+    const results = ASD(mTable, inputString, Object.keys(primeros)[0], terminalOrder);
+    setParsingResults(results);
+  };
+
   return (
     <div className="container mx-auto p-8 space-y-8">
       {/* Top Row: File content and Formatted Grammar without Left Recursion */}
@@ -100,6 +110,22 @@ const AnalyzerPage = () => {
       <div className="w-full p-4 bg-gray-100 rounded-md overflow-x-auto">
         <h2 className="text-lg font-semibold mb-2">Tabla M</h2>
         <MTable mData={mTable} terminalOrder={terminalOrder} />
+      </div>
+      
+      {/* ASD Results */}
+      <div className="w-full p-4 bg-gray-100 rounded-md">
+        <h2 className="text-lg font-semibold mb-2">Análisis Sintáctico</h2>
+        <input
+          type="text"
+          placeholder="Enter input string"
+          value={inputString}
+          onChange={(e) => setInputString(e.target.value)}
+          className="border p-2 rounded-md mb-4"
+        />
+        <button onClick={handleAnalyze} className="bg-blue-500 text-white px-4 py-2 rounded-md">
+          Analyze
+        </button>
+        <ASDTable parsingResults={parsingResults} />
       </div>
     </div>
   );

@@ -209,7 +209,7 @@ function construirTablaM(gramatica, primero, siguiente, terminales) {
 }
  /*************************************************************/
 
-export { validarExp, eliminarRecursividadPorIzquierda, calcularPrimero, calcularSiguiente, construirTablaM  };
+export { validarExp, eliminarRecursividadPorIzquierda, calcularPrimero, calcularSiguiente, calcularPrimeroProduccion, construirTablaM  };
 
 
 
