@@ -28,14 +28,14 @@ function ASD(mTable, entrada, simboloInicial, terminales) {
     const a = entradaTokens[puntero]; // Current input symbol
 
     if (X === '$' && a === '$') {
-      resultados.push([estadoPila, estadoEntrada, "Acceptance"]);
+      resultados.push([estadoPila, estadoEntrada, "Aceptado"]);
       break;
     } else if (terminales.includes(X)) { // X is a terminal
       if (X === a) { // Match
         resultados.push([estadoPila, estadoEntrada, `Match: ${X}`]);
         puntero++; // Advance the input pointer
       } else { // Mismatch
-        resultados.push([estadoPila, estadoEntrada, "Error: Terminal mismatch"]);
+        resultados.push([estadoPila, estadoEntrada, "Rechazado: Terminal mismatch"]);
         break;
       }
     } else if (mTable[X] && mTable[X][a]) { // X is a non-terminal, and there's a production
@@ -49,7 +49,7 @@ function ASD(mTable, entrada, simboloInicial, terminales) {
         }
       }
     } else { // No production found
-      resultados.push([estadoPila, estadoEntrada, "Error: No rule found"]);
+      resultados.push([estadoPila, estadoEntrada, "Rechazado: No se encontro una producción"]);
       break;
     }
   }
@@ -57,4 +57,4 @@ function ASD(mTable, entrada, simboloInicial, terminales) {
   return resultados;
 }
 
-export { ASD };
+export default ASD;

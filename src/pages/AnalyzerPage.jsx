@@ -5,7 +5,7 @@ import SiguientesTable from '../components/SiguientesTable';
 import MTable from '../components/MTable';
 import ASDTable from '../components/ASDTable';
 import { validarExp, eliminarRecursividadPorIzquierda, calcularPrimero, calcularSiguiente, construirTablaM } from '../logic/functions'; 
-import {ASD} from '../logic/ASDChecker';
+import ASD from '../logic/ASD';
 
 const AnalyzerPage = () => {
   const [fileContent, setFileContent] = useState('');
@@ -117,13 +117,13 @@ const AnalyzerPage = () => {
         <h2 className="text-lg font-semibold mb-2">Análisis Sintáctico</h2>
         <input
           type="text"
-          placeholder="Enter input string"
+          placeholder="Ingrese una cadena"
           value={inputString}
           onChange={(e) => setInputString(e.target.value)}
           className="border p-2 rounded-md mb-4"
         />
         <button onClick={handleAnalyze} className="bg-blue-500 text-white px-4 py-2 rounded-md">
-          Analyze
+          Analizar
         </button>
         <ASDTable parsingResults={parsingResults} />
       </div>
