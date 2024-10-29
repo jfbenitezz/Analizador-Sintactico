@@ -8,6 +8,16 @@ const MTable = ({ mData, terminalOrder }) => {
   const terminals = terminalOrder.filter(term =>
     nonTerminals.some(nt => term in mData[nt])
   );
+  
+  // Show with the structure `${nonTerminal}->${mData[nonTerminal][terminal]}`
+  // else show an empty string
+  const showData = (nonTerminal, terminal) => {
+    if (mData[nonTerminal][terminal]) {
+      return `${nonTerminal}->${mData[nonTerminal][terminal]}`;
+    } else {
+      return '';
+    }
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -31,7 +41,7 @@ const MTable = ({ mData, terminalOrder }) => {
                   key={terminal}
                   className="p-2 border border-gray-300 text-center"
                 >
-                  {mData[nonTerminal][terminal] || ''}
+                  {showData(nonTerminal, terminal)}
                 </td>
               ))}
             </tr>
