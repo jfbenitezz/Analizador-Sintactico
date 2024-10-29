@@ -12,6 +12,7 @@ You can access the live version of the project [here](https://jfbenitezz.github.
 - **File Upload**: Upload a grammar file to parse it automatically.
 - **FIRST and FOLLOW Sets**: Calculates and displays the FIRST and FOLLOW sets for each non-terminal.
 - **M Table**: Generates a predictive parsing table based on the grammar provided.
+- **ASD Check**: Performs a syntactic analysis to validate the input against the defined grammar, displaying the parsing results in a table format.
 
 ## Getting Started
 
