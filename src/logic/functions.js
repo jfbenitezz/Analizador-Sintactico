@@ -74,11 +74,12 @@ function obtenerPrefijoComun(producciones) {
 function factorizarPorIzquierda(gramatica) {
   const nuevaGramatica = {};
   let letrasDisponibles = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('').filter(letra => !gramatica[letra]);
-  const ordenNoTerminales = Object.keys(gramatica);
+  const ordenNoTerminales = [...Object.keys(gramatica)]; // Copy the initial order
 
-  for (let noTerminal of ordenNoTerminales) {
+  for (let i = 0; i < ordenNoTerminales.length; i++) {
+      const noTerminal = ordenNoTerminales[i];
       const producciones = gramatica[noTerminal];
-      if (!producciones) continue;  // Skip if producciones is undefined
+      if (!producciones) continue; // Skip if producciones is undefined
 
       let prefijos = {};
 
@@ -97,7 +98,7 @@ function factorizarPorIzquierda(gramatica) {
       // Analyze each prefix group
       for (let prefijo in prefijos) {
           let grupo = prefijos[prefijo];
-          if (grupo.length > 1) { // Factor out if there’s more than one production with the same prefix
+          if (grupo.length > 1) { // Factor out if there's more than one production with the same prefix
               let prefijoComun = obtenerPrefijoComun(grupo);
               let nuevoNoTerminal = letrasDisponibles.shift();
               
@@ -108,10 +109,9 @@ function factorizarPorIzquierda(gramatica) {
               nuevaGramatica[nuevoNoTerminal] = grupo.map(prod => prod.slice(prefijoComun.length) || '&');
               nuevaProducciones.push(prefijoComun + nuevoNoTerminal);
               
-              // Add only if it’s not already in ordenNoTerminales
-              if (!ordenNoTerminales.includes(nuevoNoTerminal)) {
-                  ordenNoTerminales.push(nuevoNoTerminal);  
-              }
+              // Insert new non-terminal directly after the current one in order
+              ordenNoTerminales.splice(i + 1, 0, nuevoNoTerminal);
+              i++; // Adjust the index to account for the inserted non-terminal
           } else {
               nuevaProducciones.push(grupo[0]);
           }
@@ -120,7 +120,7 @@ function factorizarPorIzquierda(gramatica) {
       nuevaGramatica[noTerminal] = nuevaProducciones;
   }
 
-  // Rebuild grammar in original order
+  // Rebuild grammar in intended order
   let nuevaGramaticaOrdenada = {};
   for (let nt of ordenNoTerminales) {
       if (nuevaGramatica[nt]) {
@@ -130,9 +130,6 @@ function factorizarPorIzquierda(gramatica) {
 
   return nuevaGramaticaOrdenada;
 }
-
-
-
 
 /*************************************************************/
 // Calculate the FIRST set
@@ -262,52 +259,65 @@ function calcularPrimeroProduccion(gramatica, produccion, primeros) {
   return conjuntoPrimero;
 }
 
-
-// Function to build the parsing table `M`// Function to build the parsing table `M`
 function construirTablaM(gramatica, primero, siguiente, terminales) {
   const tablaM = {};
 
   // Initialize `tablaM` with all terminals and end symbol `$`
+  console.log("Initializing tablaM...");
   for (const noTerminal in gramatica) {
     tablaM[noTerminal] = {};
     terminales.forEach((terminal) => {
       tablaM[noTerminal][terminal] = ''; // Initialize each terminal as an empty string
+      console.log(`tablaM[${noTerminal}][${terminal}] initialized to ''`);
     });
     tablaM[noTerminal]['$'] = ''; // End-of-input symbol
+    console.log(`tablaM[${noTerminal}]['$'] initialized to ''`);
   }
 
   // Process each production for the non-terminal
   for (const noTerminal in gramatica) {
+    console.log(`Processing non-terminal: ${noTerminal}`);
     gramatica[noTerminal].forEach((produccion) => {
+      console.log(`  Evaluating production: ${produccion}`);
+      
       // Calculate `PRIMERO` for the production
       const conjuntoPrimero = calcularPrimeroProduccion(gramatica, produccion, primero);
+      console.log(`  Calculated PRIMERO for ${produccion}:`, conjuntoPrimero);
 
       // Add production to `M[noTerminal, terminal]` for each terminal in `PRIMERO`
       conjuntoPrimero.forEach((terminal) => {
         if (terminal !== '&') { // Ignore epsilon
-          if (!tablaM[noTerminal][terminal]) {
+          console.log(`    Processing terminal: ${terminal}`);
+          if (tablaM[noTerminal][terminal] === '') {
             tablaM[noTerminal][terminal] = produccion;
+            console.log(`    Added production ${produccion} to tablaM[${noTerminal}][${terminal}]`);
           } else {
-            console.log(`Conflicto en M[${noTerminal}, ${terminal}] - ya existe ${tablaM[noTerminal][terminal]}`);
+            console.error(`    Conflicto en M[${noTerminal}, ${terminal}] - ya existe ${tablaM[noTerminal][terminal]}`);
+            // Conflict handling logic here
           }
         }
       });
 
       // If epsilon (`&`) is in `PRIMERO`, use `SIGUIENTE` to add the empty production
       if (conjuntoPrimero.has('&')) {
+        console.log(`    Epsilon detected in PRIMERO for ${produccion}, checking SIGUIENTE...`);
         siguiente[noTerminal].forEach((terminal) => {
-          if (!tablaM[noTerminal][terminal]) {
+          if (tablaM[noTerminal][terminal] === '') {
             tablaM[noTerminal][terminal] = '&'; // Explicit empty production for epsilon
+            console.log(`    Added epsilon production to tablaM[${noTerminal}][${terminal}]`);
           } else {
-            console.log(`Conflicto en M[${noTerminal}, ${terminal}] - ya existe ${tablaM[noTerminal][terminal]}`);
+            console.error(`    Conflicto en M[${noTerminal}, ${terminal}] - ya existe ${tablaM[noTerminal][terminal]}`);
+            // Conflict handling logic here
           }
         });
       }
     });
   }
 
+  console.log("Final tablaM:", JSON.stringify(tablaM, null, 2));
   return tablaM;
 }
+
  /*************************************************************/
 //Se que lo podria agrupar en diferentes archivos por grupos pero pa q
 export { validarExp, eliminarRecursividadPorIzquierda, calcularPrimero, calcularSiguiente, calcularPrimeroProduccion, construirTablaM, factorizarPorIzquierda };
