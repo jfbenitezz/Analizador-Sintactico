@@ -17,6 +17,8 @@ const AnalyzerPage = () => {
   const [terminalOrder, setTerminalOrder] = useState([]);  // Terminal order based on grammar appearance
   const [inputString, setInputString] = useState(''); // Entry string for ASD analysis
   const [parsingResults, setParsingResults] = useState([]);
+  const [nonProductiveError, setNonProductiveError] = useState(false);
+
 
   const formatGrammar = (grammar) => {
     return Object.entries(grammar)
@@ -76,9 +78,10 @@ const AnalyzerPage = () => {
     
     // Check if there are non-terminals that don't produce
     if (check.size !== nonTerminals.size || [...check].some(item => !nonTerminals.has(item))) {
-      // State to indicate that there are non-terminals that don't produce
-      console.error("Error: There are symbols that do not match.");
-      return; // Stop the process and show error
+      setNonProductiveError(true); // Set error state
+      return;
+    } else {
+      setNonProductiveError(false); // Reset the error if everything is correct
     }
     
 
@@ -93,29 +96,17 @@ const AnalyzerPage = () => {
     const siguientesCalculated = calcularSiguiente(gramatica, Object.keys(gramatica)[0], Array.from(terminals));
     setSiguientes(siguientesCalculated);
 
-    // 8. Determine terminal order based on grammar appearance
-    const terminalOrderCalculated = [];
-    for (const productions of Object.values(gramatica)) {
-      for (const production of productions) {
-        for (const char of production) {
-          const regexNonTerminal = /[^A-Z'&]/
-          // Check each character in the production to see if it's a terminal
-          if (regexNonTerminal.test(char) && !terminalOrderCalculated.includes(char)) { // Ensure only terminals are added
-            terminalOrderCalculated.push(char);
-          }
-        }
-      }
-    }
+    // 8. Construct `M Table`
+    const terminalOrderCalculated = Array.from(terminals);
     terminalOrderCalculated.push(`$`); // Add the end symbol
     setTerminalOrder(terminalOrderCalculated);
 
-    // 9. Construct `M Table`
     const mTableCalculated = construirTablaM(gramatica, primerosCalculated, siguientesCalculated, terminalOrderCalculated);
     setMTable(mTableCalculated);
   };
 
   const handleAnalyze = () => {
-   //10. Analyze the input string with the `ASD` function
+   //9. Analyze the input string with the `ASD` function
     const results = ASD(mTable, inputString, Object.keys(primeros)[0], terminalOrder);
     setParsingResults(results);
   };
@@ -135,6 +126,13 @@ const AnalyzerPage = () => {
           </pre>
         </div>
       </div>
+
+      {/*Non-productive error message */}
+      {nonProductiveError && (
+        <div className="w-full bg-red-100 text-red-700 p-4 rounded-md text-center mb-4">
+          Error: There are non-terminals that do not produce. Please check your grammar.
+        </div>
+      )}
 
       {/* Middle Row: Primeros and Siguientes Tables with fixed height */}
       <div className="flex space-x-4">

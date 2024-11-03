@@ -1,5 +1,3 @@
-const regexSimbolo = /[A-Z]'?|\(|\)|\+|\*|i|&/g;
-
 function validarExp(exp, dic) {
     exp = exp.replace(/\s/g, "");  // Remove spaces
   
