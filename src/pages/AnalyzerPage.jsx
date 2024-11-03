@@ -38,22 +38,59 @@ const AnalyzerPage = () => {
     // 2. Eliminate left recursion
     const gramatica = eliminarRecursividadPorIzquierda(dic);
 
-    // 3. Format the grammar for display purposes
+    // 3. Factorize the grammar
+    // gramatica = factorizar(gramatica);
+
+    // 4. Format the grammar for display purposes
     setFormattedGrammar(formatGrammar(gramatica));
     setGrammarWithoutRecursion(JSON.stringify(gramatica, null, 2)); // For display purposes only
 
-    // 4. Calculate `primeros`
+    // 5. Identify non-terminals and terminals
+    const nonTerminals = new Set();
+    const terminals = new Set();
+    const check = new Set(); // Check one by one for non-terminals in productions
+    check.add(Object.keys(gramatica)[0]); //Always add the initial symbol since it might not be in the productions
+    const regex = /[^A-Z&]/g;
+    const regex2 = /[A-Z]/g;
+
+    // Mostrar la gramática modificada
+    for (const [no_terminal, producciones] of Object.entries(gramatica)) {
+        nonTerminals.add(no_terminal);
+        for (const produccion of producciones) {
+            const terminalMatches = produccion.match(regex);
+            if (terminalMatches) {
+                terminalMatches.forEach(terminal => terminals.add(terminal));
+            }
+            
+            const noTerminalMatches = produccion.match(regex2);
+            if (noTerminalMatches) {
+                noTerminalMatches.forEach(noTerm => check.add(noTerm));
+            }
+        }
+        console.log(`${no_terminal} → ${producciones.join(" | ")}`);
+    }
+    
+    console.log("Check (non-terminals in productions):", Array.from(check));
+    console.log("Non-terminals:", Array.from(nonTerminals));
+    console.log("Terminals:", Array.from(terminals));
+    
+    // Check if there are non-terminals that don't produce
+    if (check.size !== nonTerminals.size || [...check].some(item => !nonTerminals.has(item))) {
+      console.error("Error: There are symbols that do not match.");
+      return; // Stop the process and show error
+    }
+    // 6. Calulate `primeros`
     const primerosCalculated = {};
     for (const nt in gramatica) {
       primerosCalculated[nt] = calcularPrimero(gramatica, nt, {});
     }
     setPrimeros(primerosCalculated);
 
-    // 5. Calculate `siguientes`
+    // 7. Calculate `siguientes`
     const siguientesCalculated = calcularSiguiente(gramatica, Object.keys(gramatica)[0]);
     setSiguientes(siguientesCalculated);
 
-    // 6. Determine terminal order based on grammar appearance
+    // 8. Determine terminal order based on grammar appearance
     const terminalOrderCalculated = [];
     for (const productions of Object.values(gramatica)) {
       for (const production of productions) {
@@ -69,13 +106,13 @@ const AnalyzerPage = () => {
     terminalOrderCalculated.push(`$`); // Add the end symbol
     setTerminalOrder(terminalOrderCalculated);
 
-    // 7. Construct `M Table`
+    // 9. Construct `M Table`
     const mTableCalculated = construirTablaM(gramatica, primerosCalculated, siguientesCalculated, terminalOrderCalculated);
     setMTable(mTableCalculated);
   };
 
   const handleAnalyze = () => {
-   //8. Analyze the input string with the `ASD` function
+   //10. Analyze the input string with the `ASD` function
     const results = ASD(mTable, inputString, Object.keys(primeros)[0], terminalOrder);
     setParsingResults(results);
   };
@@ -89,7 +126,7 @@ const AnalyzerPage = () => {
           <FileUpload onFileRead={handleFileRead} />
         </div>
         <div className="w-1/2 p-4 bg-gray-100 rounded-md">
-          <h2 className="text-lg font-semibold mb-2">GIC No Recursiva</h2>
+          <h2 className="text-lg font-semibold mb-2">GIC Forma Normal</h2>
           <pre className="bg-white p-2 h-40 overflow-y-auto rounded-md whitespace-pre-wrap">
             {formattedGrammar}
           </pre>

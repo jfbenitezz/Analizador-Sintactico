@@ -17,35 +17,42 @@ function validarExp(exp, dic) {
     return dic;
 }
 
-/*************************************************************/
-function eliminarRecursividadPorIzquierda(gramatica) {
+/*************************************************************/function eliminarRecursividadPorIzquierda(gramatica) {
     const nuevaGramatica = {};
-  
+    const letrasDisponibles = new Set("ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""));
+    
+    // Remove existing non-terminals from available letters
+    Object.keys(gramatica).forEach(noTerminal => letrasDisponibles.delete(noTerminal));
+
     for (const [noTerminal, producciones] of Object.entries(gramatica)) {
-      const recursivas = [];
-      const noRecursivas = [];
-  
-      // Separate recursive and non-recursive productions
-      producciones.forEach(prod => {
-        if (prod.startsWith(noTerminal)) {
-          recursivas.push(prod.slice(noTerminal.length));  // α for A → Aα
+        const recursivas = [];
+        const noRecursivas = [];
+
+        // Separate recursive and non-recursive productions
+        producciones.forEach(prod => {
+            if (prod.startsWith(noTerminal)) {
+                recursivas.push(prod.slice(noTerminal.length));  // α for A → Aα
+            } else {
+                noRecursivas.push(prod);  // β for A → β
+            }
+        });
+
+        // If recursion exists, eliminate it
+        if (recursivas.length > 0) {
+            // Select a letter from available ones for the new non-terminal
+            const nuevoNoTerminal = letrasDisponibles.values().next().value;
+            letrasDisponibles.delete(nuevoNoTerminal);  // Remove it from available letters
+
+            nuevaGramatica[noTerminal] = noRecursivas.map(beta => beta + nuevoNoTerminal);
+            nuevaGramatica[nuevoNoTerminal] = recursivas.map(alpha => alpha + nuevoNoTerminal).concat('&');
         } else {
-          noRecursivas.push(prod);  // β for A → β
+            nuevaGramatica[noTerminal] = producciones;
         }
-      });
-  
-      // If recursion exists, eliminate it
-      if (recursivas.length > 0) {
-        const nuevoNoTerminal = `${noTerminal}'`;
-        nuevaGramatica[noTerminal] = noRecursivas.map(beta => beta + nuevoNoTerminal);
-        nuevaGramatica[nuevoNoTerminal] = recursivas.map(alpha => alpha + nuevoNoTerminal).concat('&');
-      } else {
-        nuevaGramatica[noTerminal] = producciones;
-      }
     }
-  
+
     return nuevaGramatica;
 }
+
 
 /*************************************************************/
 // Calculate the FIRST set
