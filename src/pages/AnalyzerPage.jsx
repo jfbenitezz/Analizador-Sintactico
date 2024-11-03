@@ -76,9 +76,12 @@ const AnalyzerPage = () => {
     
     // Check if there are non-terminals that don't produce
     if (check.size !== nonTerminals.size || [...check].some(item => !nonTerminals.has(item))) {
+      // State to indicate that there are non-terminals that don't produce
       console.error("Error: There are symbols that do not match.");
       return; // Stop the process and show error
     }
+    
+
     // 6. Calulate `primeros`
     const primerosCalculated = {};
     for (const nt in gramatica) {
@@ -87,7 +90,7 @@ const AnalyzerPage = () => {
     setPrimeros(primerosCalculated);
 
     // 7. Calculate `siguientes`
-    const siguientesCalculated = calcularSiguiente(gramatica, Object.keys(gramatica)[0]);
+    const siguientesCalculated = calcularSiguiente(gramatica, Object.keys(gramatica)[0], Array.from(terminals));
     setSiguientes(siguientesCalculated);
 
     // 8. Determine terminal order based on grammar appearance

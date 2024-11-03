@@ -84,52 +84,66 @@ function calcularPrimero(gramatica, simbolo, primeros = {}) {
     }
     return primeros[simbolo];
   }
-  
   // Calculate the FOLLOW set
-  function calcularSiguiente(gramatica, simboloInicial) {
-    const siguientes = Object.keys(gramatica).reduce((acc, key) => {
-      acc[key] = [];
-      return acc;
-    }, {});
-    if (!siguientes[simboloInicial].includes("$")) siguientes[simboloInicial].push("$");
-  
-    let cambios = true;
-    while (cambios) {
-      cambios = false;
-      for (const [noTerminal, producciones] of Object.entries(gramatica)) {
-        for (const produccion of producciones) {
-          const produccionSimbolos = produccion.match(regexSimbolo) || [];
-          for (let i = 0; i < produccionSimbolos.length; i++) {
-            const simbolo = produccionSimbolos[i];
-            if (gramatica[simbolo]) {
-              const siguienteTemporal = [];
-  
-              if (i + 1 < produccionSimbolos.length) {
-                const siguientePrimero = calcularPrimero(gramatica, produccionSimbolos[i + 1], {});
-                siguientePrimero.forEach(sym => {
-                  if (sym !== "&" && !siguienteTemporal.includes(sym)) siguienteTemporal.push(sym);
-                });
-              }
-  
-              if (i + 1 === produccionSimbolos.length || calcularPrimero(gramatica, produccionSimbolos[i + 1], {}).includes("&")) {
-                siguientes[noTerminal].forEach(sym => {
-                  if (!siguienteTemporal.includes(sym)) siguienteTemporal.push(sym);
-                });
-              }
-  
-              siguienteTemporal.forEach(sym => {
-                if (!siguientes[simbolo].includes(sym)) {
-                  siguientes[simbolo].push(sym);
-                  cambios = true;
-                }
+function calcularSiguiente(gramatica, simboloInicial, terminales) {
+  const siguientes = Object.keys(gramatica).reduce((acc, key) => {
+    acc[key] = [];
+    return acc;
+  }, {});
+  siguientes[simboloInicial].push("$");
+
+  let cambios = true;
+  while (cambios) {
+    cambios = false;
+    for (const [noTerminal, producciones] of Object.entries(gramatica)) {
+      for (const produccion of producciones) {
+        const produccionSimbolos = [];
+        // Manual symbol extraction based on terminals provided
+        for (let i = 0; i < produccion.length; i++) {
+          const simbolo = produccion[i];
+          if (simbolo.toUpperCase() === simbolo) {  // Uppercase symbols are non-terminals
+            produccionSimbolos.push(simbolo);
+          } else if (terminales.includes(simbolo)) { // Check against terminal list
+            produccionSimbolos.push(simbolo);
+          }
+        }
+
+        // Calculate FOLLOW set for each non-terminal in the production
+        for (let i = 0; i < produccionSimbolos.length; i++) {
+          const simbolo = produccionSimbolos[i];
+          if (gramatica[simbolo]) { // Only process if it's a non-terminal
+            const siguienteTemporal = [];
+
+            // If there is a next symbol, add its FIRST set to FOLLOW
+            if (i + 1 < produccionSimbolos.length) {
+              const siguienteSimbolo = produccionSimbolos[i + 1];
+              const primeroSiguiente = calcularPrimero(gramatica, siguienteSimbolo, {});
+              primeroSiguiente.forEach(sym => {
+                if (sym !== "&" && !siguienteTemporal.includes(sym)) siguienteTemporal.push(sym);
               });
             }
+
+            // If it's the last symbol or the next symbol's FIRST contains epsilon
+            if (i + 1 === produccionSimbolos.length || calcularPrimero(gramatica, produccionSimbolos[i + 1], {}).includes("&")) {
+              siguientes[noTerminal].forEach(sym => {
+                if (!siguienteTemporal.includes(sym)) siguienteTemporal.push(sym);
+              });
+            }
+
+            // Update FOLLOW set if there are new elements
+            siguienteTemporal.forEach(sym => {
+              if (!siguientes[simbolo].includes(sym)) {
+                siguientes[simbolo].push(sym);
+                cambios = true;
+              }
+            });
           }
         }
       }
     }
-    return siguientes;
   }
+  return siguientes;
+}
 
  /*************************************************************/
 
