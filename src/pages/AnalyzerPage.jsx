@@ -4,7 +4,7 @@ import PrimerosTable from '../components/PrimerosTable';
 import SiguientesTable from '../components/SiguientesTable';
 import MTable from '../components/MTable';
 import ASDTable from '../components/ASDTable';
-import { validarExp, eliminarRecursividadPorIzquierda, calcularPrimero, calcularSiguiente, construirTablaM } from '../logic/functions'; 
+import { validarExp, eliminarRecursividadPorIzquierda, calcularPrimero, calcularSiguiente, construirTablaM, factorizarPorIzquierda } from '../logic/functions'; 
 import ASD from '../logic/ASD';
 
 const AnalyzerPage = () => {
@@ -38,10 +38,10 @@ const AnalyzerPage = () => {
     });
 
     // 2. Eliminate left recursion
-    const gramatica = eliminarRecursividadPorIzquierda(dic);
+    const gramatica_no_rec = eliminarRecursividadPorIzquierda(dic);
 
     // 3. Factorize the grammar
-    // gramatica = factorizar(gramatica);
+    const gramatica = factorizarPorIzquierda(gramatica_no_rec);
 
     // 4. Format the grammar for display purposes
     setFormattedGrammar(formatGrammar(gramatica));

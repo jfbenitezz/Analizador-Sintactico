@@ -15,7 +15,8 @@ function validarExp(exp, dic) {
     return dic;
 }
 
-/*************************************************************/function eliminarRecursividadPorIzquierda(gramatica) {
+/*************************************************************/
+function eliminarRecursividadPorIzquierda(gramatica) {
     const nuevaGramatica = {};
     const letrasDisponibles = new Set("ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""));
     
@@ -50,6 +51,87 @@ function validarExp(exp, dic) {
 
     return nuevaGramatica;
 }
+
+
+/*************************************************************/
+// Left Factorize the grammar
+function obtenerPrefijoComun(producciones) {
+  if (!producciones || producciones.length <= 1) return "";
+
+  let prefijoComun = producciones[0];
+  for (let produccion of producciones.slice(1)) {
+      let i = 0;
+      while (i < prefijoComun.length && i < produccion.length && prefijoComun[i] === produccion[i]) {
+          i++;
+      }
+      prefijoComun = prefijoComun.slice(0, i);
+      if (!prefijoComun) break;
+  }
+
+  return prefijoComun;
+}
+
+function factorizarPorIzquierda(gramatica) {
+  const nuevaGramatica = {};
+  let letrasDisponibles = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('').filter(letra => !gramatica[letra]);
+  const ordenNoTerminales = Object.keys(gramatica);
+
+  for (let noTerminal of ordenNoTerminales) {
+      const producciones = gramatica[noTerminal];
+      if (!producciones) continue;  // Skip if producciones is undefined
+
+      let prefijos = {};
+
+      // Group productions by their initial symbol
+      for (let produccion of producciones) {
+          let prefijo = produccion[0] || "";
+          if (prefijos[prefijo]) {
+              prefijos[prefijo].push(produccion);
+          } else {
+              prefijos[prefijo] = [produccion];
+          }
+      }
+
+      let nuevaProducciones = [];
+
+      // Analyze each prefix group
+      for (let prefijo in prefijos) {
+          let grupo = prefijos[prefijo];
+          if (grupo.length > 1) { // Factor out if there’s more than one production with the same prefix
+              let prefijoComun = obtenerPrefijoComun(grupo);
+              let nuevoNoTerminal = letrasDisponibles.shift();
+              
+              if (!nuevoNoTerminal) {
+                  throw new Error("Ran out of non-terminal letters to use.");
+              }
+
+              nuevaGramatica[nuevoNoTerminal] = grupo.map(prod => prod.slice(prefijoComun.length) || '&');
+              nuevaProducciones.push(prefijoComun + nuevoNoTerminal);
+              
+              // Add only if it’s not already in ordenNoTerminales
+              if (!ordenNoTerminales.includes(nuevoNoTerminal)) {
+                  ordenNoTerminales.push(nuevoNoTerminal);  
+              }
+          } else {
+              nuevaProducciones.push(grupo[0]);
+          }
+      }
+
+      nuevaGramatica[noTerminal] = nuevaProducciones;
+  }
+
+  // Rebuild grammar in original order
+  let nuevaGramaticaOrdenada = {};
+  for (let nt of ordenNoTerminales) {
+      if (nuevaGramatica[nt]) {
+          nuevaGramaticaOrdenada[nt] = nuevaGramatica[nt];
+      }
+  }
+
+  return nuevaGramaticaOrdenada;
+}
+
+
 
 
 /*************************************************************/
@@ -227,8 +309,8 @@ function construirTablaM(gramatica, primero, siguiente, terminales) {
   return tablaM;
 }
  /*************************************************************/
-
-export { validarExp, eliminarRecursividadPorIzquierda, calcularPrimero, calcularSiguiente, calcularPrimeroProduccion, construirTablaM  };
+//Se que lo podria agrupar en diferentes archivos por grupos pero pa q
+export { validarExp, eliminarRecursividadPorIzquierda, calcularPrimero, calcularSiguiente, calcularPrimeroProduccion, construirTablaM, factorizarPorIzquierda };
 
 
 
