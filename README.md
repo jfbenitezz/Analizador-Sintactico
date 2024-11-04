@@ -1,30 +1,38 @@
-# Grammar Analyzer
+# Analizador de Gramáticas
 
-This project is a grammar analyzer built in React, designed to parse context-free grammars (CFG) and construct parsing tables. It supports functionalities such as removing left recursion, calculating FIRST and FOLLOW sets, and building the predictive parsing table (M Table).
+Este proyecto es un analizador de gramáticas construido en React, diseñado para analizar gramáticas libres de contexto (GLC) y construir tablas de análisis. Soporta funcionalidades como la eliminación de recursión por la izquierda, el cálculo de los conjuntos PRIMERO y SIGUIENTE, y la construcción de la tabla de análisis predictivo (Tabla M).
 
-### GitHub Pages Link
+### Enlace de GitHub Pages
 
-You can access the live version of the project [here](https://jfbenitezz.github.io/Analizador-Sintactico/).
+Puedes acceder a la versión en vivo del proyecto [aquí](https://jfbenitezz.github.io/Analizador-Sintactico/).
 ---
 
-## Features
+## Funcionalidades
 
-- **File Upload**: Upload a grammar file to parse it automatically.
-- **FIRST and FOLLOW Sets**: Calculates and displays the FIRST and FOLLOW sets for each non-terminal.
-- **M Table**: Generates a predictive parsing table based on the grammar provided.
-- **ASD Check**: Performs a syntactic analysis to validate the input against the defined grammar, displaying the parsing results in a table format.
+- **Carga de Archivos**: Carga un archivo de gramática para analizarlo automáticamente.
+- **Conjuntos PRIMERO y SIGUIENTE**: Calcula y muestra los conjuntos PRIMERO y SIGUIENTE para cada no terminal.
+- **Tabla M**: Genera una tabla de análisis predictivo basada en la gramática proporcionada.
+- **Verificación ASD**: Realiza un análisis sintáctico para validar la entrada contra la gramática definida, mostrando los resultados del análisis en formato de tabla.
 
-## Getting Started
+## Comenzando
 
-### Prerequisites
+### Requisitos Previos
 
-Make sure you have **Node.js** and **npm** installed. You can download them from [Node.js official website](https://nodejs.org/).
+Asegúrate de tener **Node.js** y **npm** instalados. Puedes descargarlos desde [el sitio oficial de Node.js](https://nodejs.org/).
 
-### Grammar Format
-Grammars should be defined in a `.txt` file with each production on a new line. Here’s an example:
+### Formato de la Gramática
+
+Las gramáticas deben definirse en un archivo `.txt`, con cada producción en una nueva línea. Aquí tienes un ejemplo:
 
 - E -> E + T
 - E -> T
 - T -> T * F
 - T -> F
 - F -> i
+
+### Instrucciones de Ejecución
+
+Para ejecutar el proyecto localmente, corre los siguientes comandos en la terminal dentro de la carpeta del proyecto:
+
+1. `npm i` para instalar las dependencias.
+2. `npm run dev` para iniciar el proyecto en modo de desarrollo.
