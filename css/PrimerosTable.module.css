@@ -1,0 +1,16 @@
+
+.tabla{
+    @apply w-full bg-white table-auto  p-4  overflow-x-auto rounded-md shadow-lg;
+}
+
+.no_terminales{
+    @apply   border-gray-500  px-4 py-2 mx-2 font-medium;
+ 
+    
+
+}
+.terminales{
+    @apply border border-gray-500  px-4 py-2;
+   
+
+}
