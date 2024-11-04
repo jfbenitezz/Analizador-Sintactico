@@ -1,0 +1,21 @@
+.Mtable{
+    @apply min-w-full   bg-white rounded-sm;
+}
+.no_terminales{
+    @apply p-2  ;
+    background-color: #ffa69e;
+
+}
+.terminales{
+    @apply p-2 w-20 pl-9 ;
+    background-color: #7cd2ec;
+}
+
+.no_terminales_row{
+    @apply p-2  pl-9  ;
+    width: 8%;
+    background-color: #7cd2ec;
+}
+.terminales_row{
+    @apply p-2 border border-gray-300 text-center;
+}

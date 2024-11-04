@@ -1,15 +1,16 @@
 // SiguientesTable.js
 import React from 'react';
+import classes from '../../public/css/SiguientesTable.module.css';
 
 const SiguientesTable = ({ siguientes }) => (
   <div className="h-full">
-    <h2 className="text-lg font-semibold mb-2">Siguientes</h2>
-    <table className="w-full table-auto">
+    
+    <table className={classes.tabla}>
       <tbody>
         {Object.entries(siguientes).map(([key, values]) => (
           <tr key={key}>
-            <td className="border px-4 py-2 font-medium">{key}</td>
-            <td className="border px-4 py-2">{values.join(', ')}</td>
+            <td className={classes.no_terminales}>{key}</td>
+            <td className={classes.terminales}>{values.join(', ')}</td>
           </tr>
         ))}
       </tbody>
