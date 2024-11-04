@@ -47,7 +47,7 @@ const FileUpload = ({ onFileRead }) => {
 
   return (
     <div
-      className={`w-full p-4 rounded-md ${isDragging ? 'bg-gray-300' : 'bg-gray-100'}`}
+      className={`${isDragging ? classes.principal : classes.principal2}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -63,18 +63,18 @@ const FileUpload = ({ onFileRead }) => {
         type="file"
         accept=".txt"
         onChange={handleFileSelect}
-        className="hidden" 
+        className={classes.oculto} 
       />
 
      
-      <span className="text-sm text-gray-500 mt-2 block">Archivo: {fileName}</span>
+      <span className={classes.seleccion_archivo}>Archivo: {fileName}</span>
       
       {isempty ? (
-        <pre className="bg-white p-2 h-40 overflow-y-auto rounded-md text-gray-500">
+        <pre className={classes.content}>
           Selecciona un archivo de tipo txt
         </pre>
       ) : (
-        <pre className="bg-white p-2 h-40 overflow-y-auto rounded-md">{fileContent}</pre>
+        <pre className={classes.content}>{fileContent}</pre>
       )}
     </div>
   );

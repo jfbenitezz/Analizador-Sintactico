@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import classes from '../../public/css/ASDTable.module.css';
 
@@ -19,15 +18,15 @@ const ASDTable = ({ parsingResults }) => {
             <tr>
               <th className={classes.nombres}>Pila</th>
               <th  className={classes.nombres}>Entrada</th>
-              <th className={classes.nombres}>Acción</th>
+              <th className={classes.nombres}>Salida</th>
             </tr>
           </thead>
           <tbody>
             {parsingResults.map((result, index) => (
               <tr key={index}>
-                <td className="border-b border-gray-200 px-4 py-2">{result[0] || '-'}</td>
-                <td className="border-b border-gray-200 px-4 py-2">{result[1] || '-'}</td>
-                <td className="border-b border-gray-200 px-4 py-2">{result[2] || '-'}</td>
+                <td className={classes.result}>{result[0] || '-'}</td>
+                <td className={classes.result}>{result[1] || '-'}</td>
+                <td className={classes.result}>{result[2] || '-'}</td>
               </tr>
             ))}
           </tbody>

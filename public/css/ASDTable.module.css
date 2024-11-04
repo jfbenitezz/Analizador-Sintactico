@@ -17,3 +17,7 @@
   .aviso{
     @apply text-center font-semibold mb-2 bg-white rounded-lg w-1/2 mx-auto xl:text-xl   text-gray-500;
   }
+
+  .result{
+    @apply border-b border-gray-200 px-4 py-2;
+  }

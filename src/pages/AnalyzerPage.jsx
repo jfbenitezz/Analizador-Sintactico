@@ -125,7 +125,8 @@ const AnalyzerPage = () => {
   return (
     <div className={classes.container_principal}>
       {/* Top Row: File content and Formatted Grammar without Left Recursion */}
-      <div className="flex space-x-4">
+      <div className={classes.orden}>
+    
         <div className={classes.contenedores_GIC}>
           <h2 className={classes.titulo_GIC}>GIC</h2>
           <FileUpload onFileRead={handleFileRead} />
@@ -151,6 +152,7 @@ const AnalyzerPage = () => {
         
          
         </div>
+        
       </div>
 
       {/*Non-productive error message */}
@@ -161,7 +163,8 @@ const AnalyzerPage = () => {
       )}
 
       {/* Middle Row: Primeros and Siguientes Tables with fixed height */}
-      <div className="flex space-x-4">
+      <div className={classes.orden}>
+      
         <div className={classes.contenedores_prim_sgte}>
            <h2 className={classes.titulo_GIC}>Primeros</h2>
            {aviso? <div className={classes.container_aviso}> <p className={classes.aviso}> 
@@ -188,6 +191,7 @@ const AnalyzerPage = () => {
            </>}
         
         </div>
+     
       </div>
 
       {/* Bottom Row: M Table */}

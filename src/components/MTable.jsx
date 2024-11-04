@@ -39,7 +39,7 @@ const MTable = ({ mData, terminalOrder }) => {
               {terminals.map(terminal => (
                 <td
                   key={terminal}
-                  className="p-2 border border-gray-300 text-center"
+                  className={classes.terminales_row}
                 >
                   {showData(nonTerminal, terminal)}
                 </td>
