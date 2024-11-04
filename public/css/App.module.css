@@ -1,0 +1,6 @@
+
+.titulo{
+    @apply 2xl:text-7xl  font-semibold  w-1/2 mx-auto text-center mt-16 text-4xl;
+
+    color: #52b2cf;
+}

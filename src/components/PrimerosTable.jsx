@@ -1,20 +1,25 @@
 // PrimerosTable.js
-import React from 'react';
+import React, { useEffect } from 'react';
+import classes from '../../public/css/PrimerosTable.module.css';
+
 
 const PrimerosTable = ({ primeros }) => (
+
+
   <div className="h-full">
-    <h2 className="text-lg font-semibold mb-2">Primeros</h2>
-    <table className="w-full table-auto">
+    
+    <table className={classes.tabla}>
       <tbody>
         {Object.entries(primeros).map(([key, values]) => (
           <tr key={key}>
-            <td className="border px-4 py-2 font-medium">{key}</td>
-            <td className="border px-4 py-2">{values.join(', ')}</td>
+            <td className={classes.no_terminales}>{key}</td>
+            <td className={classes.terminales}>{values.join(', ')}</td>
           </tr>
         ))}
       </tbody>
     </table>
   </div>
+  
 );
 
 export default PrimerosTable;

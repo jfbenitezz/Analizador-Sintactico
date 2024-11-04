@@ -1,5 +1,5 @@
 import React from 'react';
-
+import classes from '../../public/css/MTable.module.css';
 const MTable = ({ mData, terminalOrder }) => {
   // Get the unique list of non-terminals (rows)
   const nonTerminals = Object.keys(mData);
@@ -20,13 +20,13 @@ const MTable = ({ mData, terminalOrder }) => {
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full border-collapse border border-gray-200">
+    <div className='overflow-x-auto'>
+      <table className={classes.Mtable}>
         <thead>
           <tr>
-            <th className="p-2 border border-gray-300 bg-blue-200">No Term</th>
+            <th className={classes.no_terminales}></th>
             {terminals.map(terminal => (
-              <th key={terminal} className="p-2 border border-gray-300 bg-blue-200">
+              <th key={terminal} className={classes.terminales}>
                 {terminal}
               </th>
             ))}
@@ -35,7 +35,7 @@ const MTable = ({ mData, terminalOrder }) => {
         <tbody>
           {nonTerminals.map(nonTerminal => (
             <tr key={nonTerminal}>
-              <td className="p-2 w-20 pl-9 border border-gray-300 bg-blue-100">{nonTerminal}</td>
+              <td className={classes.no_terminales_row}>{nonTerminal}</td>
               {terminals.map(terminal => (
                 <td
                   key={terminal}

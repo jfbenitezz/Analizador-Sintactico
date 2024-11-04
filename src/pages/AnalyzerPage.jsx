@@ -5,6 +5,7 @@ import SiguientesTable from '../components/SiguientesTable';
 import MTable from '../components/MTable';
 import ASDTable from '../components/ASDTable';
 import { validarExp, eliminarRecursividadPorIzquierda, calcularPrimero, calcularSiguiente, construirTablaM, factorizarPorIzquierda } from '../logic/functions'; 
+import classes from '../../public/css/AnalyzerPage.module.css';
 import ASD from '../logic/ASD';
 
 const AnalyzerPage = () => {
@@ -18,6 +19,16 @@ const AnalyzerPage = () => {
   const [inputString, setInputString] = useState(''); // Entry string for ASD analysis
   const [parsingResults, setParsingResults] = useState([]);
   const [nonProductiveError, setNonProductiveError] = useState(false);
+  const [aviso, setAviso] = useState(false);
+
+  useEffect(() => {
+     //Verificar si hay un archivo cargado
+    if (fileContent) {
+      setAviso(false);
+    }else{
+      setAviso(true);
+    }
+  }, [fileContent]);
 
 
   const formatGrammar = (grammar) => {
@@ -112,58 +123,118 @@ const AnalyzerPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-8 space-y-8">
+    <div className={classes.container_principal}>
       {/* Top Row: File content and Formatted Grammar without Left Recursion */}
       <div className="flex space-x-4">
-        <div className="w-1/2 p-4 bg-gray-100 rounded-md">
-          <h2 className="text-lg font-semibold mb-2">GIC</h2>
+        <div className={classes.contenedores_GIC}>
+          <h2 className={classes.titulo_GIC}>GIC</h2>
           <FileUpload onFileRead={handleFileRead} />
         </div>
-        <div className="w-1/2 p-4 bg-gray-100 rounded-md">
-          <h2 className="text-lg font-semibold mb-2">GIC Forma Normal</h2>
-          <pre className="bg-white p-2 h-40 overflow-y-auto rounded-md whitespace-pre-wrap">
+        <div  className={classes.contenedores_GIC}>
+          <h2 className={classes.titulo_GIC}>GIC Forma Normal</h2>
+          {aviso? <div className={classes.container_aviso}> <p className={classes.aviso}>
+            
+            ¡Cargue un archivo para ver la gramática en su forma normal!
+            
+            </p> </div> : <>
+              {nonProductiveError?  <div className={classes.container_aviso}> <p className={classes.aviso}>
+
+              ¡No se puede hacer la gramática en su forma normal con esa gramatica!
+    
+              </p> </div> :     <pre className={classes.content_GICF}>
             {formattedGrammar}
           </pre>
+             }
+             </>
+        }
+
+        
+         
         </div>
       </div>
 
       {/*Non-productive error message */}
       {nonProductiveError && (
         <div className="w-full bg-red-100 text-red-700 p-4 rounded-md text-center mb-4">
-          Error: There are non-terminals that do not produce. Please check your grammar.
+          <p>¡Error! ¡Hay no terminales que no producen en tu gramatica!</p>
         </div>
       )}
 
       {/* Middle Row: Primeros and Siguientes Tables with fixed height */}
       <div className="flex space-x-4">
-        <div className="w-1/2 p-4 bg-gray-100 rounded-md overflow-y-auto max-h-80">
-          <PrimerosTable primeros={primeros} />
+        <div className={classes.contenedores_prim_sgte}>
+           <h2 className={classes.titulo_GIC}>Primeros</h2>
+           {aviso? <div className={classes.container_aviso}> <p className={classes.aviso}> 
+            ¡Cargue un archivo para ver los primeros de tu gramatica!
+            </p> </div> : <>
+            {nonProductiveError?  <div className={classes.container_aviso}> <p className={classes.aviso}>
+
+            ¡No se puede hacer la tabla de primeros con esas producciones!
+
+            </p> </div> :  <PrimerosTable primeros={primeros} /> }
+         </>}
+           
         </div>
-        <div className="w-1/2 p-4 bg-gray-100 rounded-md overflow-y-auto max-h-80">
-          <SiguientesTable siguientes={siguientes} />
+        <div className={classes.contenedores_prim_sgte}>
+          <h2 className={classes.titulo}>Siguientes</h2>
+          {aviso? <div className={classes.container_aviso}> <p className={classes.aviso}> 
+            ¡Cargue un archivo para ver los siguientes de tu gramatica!
+            </p> </div> : <>
+            {nonProductiveError?  <div className={classes.container_aviso}> <p className={classes.aviso}>
+
+          ¡No se puede hacer la tabla de siguientes con esas producciones!
+
+          </p> </div> : <SiguientesTable siguientes={siguientes} />}
+           </>}
+        
         </div>
       </div>
 
       {/* Bottom Row: M Table */}
-      <div className="w-full p-4 bg-gray-100 rounded-md overflow-x-auto">
-        <h2 className="text-lg font-semibold mb-2">Tabla M</h2>
-        <MTable mData={mTable} terminalOrder={terminalOrder} />
+      <div className={classes.tabla_m}>
+        <h2 className={classes.titulo_tabla_analisis}>Tabla M</h2>
+       
+        {aviso? <div className={classes.container_aviso}> <p className={classes.aviso}> 
+            ¡Cargue un archivo para ver la tabla M en tu gramatica!
+            </p> </div> : <>
+
+            {nonProductiveError?  <div className={classes.container_aviso}> <p className={classes.aviso}>
+
+            ¡No se puede hacer la tabla M con esas producciones!
+
+            </p> </div> :  <MTable mData={mTable} terminalOrder={terminalOrder} />}
+           </>}
+
+            
       </div>
       
       {/* ASD Results */}
-      <div className="w-full p-4 bg-gray-100 rounded-md">
-        <h2 className="text-lg font-semibold mb-2">Análisis Sintáctico</h2>
-        <input
-          type="text"
-          placeholder="Ingrese una cadena"
-          value={inputString}
-          onChange={(e) => setInputString(e.target.value)}
-          className="border p-2 rounded-md mb-4"
-        />
-        <button onClick={handleAnalyze} className="bg-blue-500 text-white px-4 py-2 rounded-md">
-          Analizar
-        </button>
-        <ASDTable parsingResults={parsingResults} />
+      <div className={classes.analizador}>
+        <h2 className={classes.titulo_tabla_analisis}>Análisis Sintáctico</h2>
+        {aviso? <div className={classes.container_aviso}> <p className={classes.aviso}> 
+            ¡Cargue un archivo para analizar la cadena con tu gramatica!
+            </p> </div> : <>
+              {nonProductiveError?  <div className={classes.container_aviso}> <p className={classes.aviso}>
+
+              ¡No se puede hacer el analisis con esa gramatica!
+  
+              </p> </div> :  <>
+             <h2 className={classes.titulo_input}>Cadena a probar:</h2>
+             <input
+               type="text"
+               placeholder="Ingrese una cadena"
+               value={inputString}
+               onChange={(e) => setInputString(e.target.value)}
+               className={classes.input_analizador}
+             />
+             <button onClick={handleAnalyze} className={classes.boton_analizador}>
+               Analizar
+             </button>
+             <ASDTable parsingResults={parsingResults} />
+             </>}
+             </>
+            }
+       
       </div>
     </div>
   );
