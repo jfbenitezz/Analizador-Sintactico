@@ -42,11 +42,22 @@ const AnalyzerPage = () => {
     setFileContent(content);
 
     // 1. Parse each line and build the grammar dictionary
-    const lines = content.split('\n');
+    const lines = content.trim().split('\n');
     let dic = {};
-    lines.forEach((line) => {
-      dic = validarExp(line.trim(), dic);
-    });
+    let hasError = false;
+
+    if (!hasError) {
+      lines.forEach((line) => {
+        if (hasError) return;
+        const result = validarExp(line.trim(), dic);
+        if (!result) {
+            hasError = true;  // Set flag if any production is invalid
+            setNonProductiveError(true);
+        } else {
+            dic = result;  // Only update dic if production was valid
+        }
+      });
+    }
 
     // 2. Eliminate left recursion
     const gramatica_no_rec = eliminarRecursividadPorIzquierda(dic);

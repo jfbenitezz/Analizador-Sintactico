@@ -12,16 +12,33 @@ function validarExp(exp, dic) {
         dic[key] = [production];
       }
     }
+    else {
+      console.log(`Error: ${exp} is not a valid production`)
+     return false 
+    }
     return dic;
 }
 
+function RemoveUsedLetters(gramatica) {
+  let letrasDisponibles = new Set("ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""));
+  for (const [noTerminal, producciones] of Object.entries(gramatica)) {
+    letrasDisponibles.delete(noTerminal);  // Remove Keys from available letters
+    producciones.forEach(prod => {
+        // Remove any uppercase letter in productions from available letters
+        for (const char of prod) {
+            console.log("letra", char);
+            if (/[A-Z]/.test(char)) {
+                letrasDisponibles.delete(char);
+            }
+        }
+    });
+  }
+  return letrasDisponibles;
+}
 /*************************************************************/
 function eliminarRecursividadPorIzquierda(gramatica) {
     const nuevaGramatica = {};
-    const letrasDisponibles = new Set("ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""));
-    
-    // Remove existing non-terminals from available letters
-    Object.keys(gramatica).forEach(noTerminal => letrasDisponibles.delete(noTerminal));
+    const letrasDisponibles = RemoveUsedLetters(gramatica);
 
     for (const [noTerminal, producciones] of Object.entries(gramatica)) {
         const recursivas = [];
@@ -73,7 +90,7 @@ function obtenerPrefijoComun(producciones) {
 
 function factorizarPorIzquierda(gramatica) {
   const nuevaGramatica = {};
-  let letrasDisponibles = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('').filter(letra => !gramatica[letra]);
+  const letrasDisponibles = Array.from( RemoveUsedLetters(gramatica))
   const ordenNoTerminales = [...Object.keys(gramatica)]; // Copy the initial order
 
   for (let i = 0; i < ordenNoTerminales.length; i++) {
