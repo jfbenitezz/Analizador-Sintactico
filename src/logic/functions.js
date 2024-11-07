@@ -278,6 +278,7 @@ function calcularPrimeroProduccion(gramatica, produccion, primeros) {
 
 function construirTablaM(gramatica, primero, siguiente, terminales) {
   const tablaM = {};
+  const errores = [];
 
   // Initialize `tablaM` with all terminals and end symbol `$`
   console.log("Initializing tablaM...");
@@ -310,7 +311,13 @@ function construirTablaM(gramatica, primero, siguiente, terminales) {
             console.log(`    Added production ${produccion} to tablaM[${noTerminal}][${terminal}]`);
           } else {
             console.error(`    Conflicto en M[${noTerminal}, ${terminal}] - ya existe ${tablaM[noTerminal][terminal]}`);
+
+            errores.push(`Conflicto en M[${noTerminal}, ${terminal}] - ya existe ${tablaM[noTerminal][terminal]}`);
+          
+
             // Conflict handling logic here
+            
+           
           }
         }
       });
@@ -324,7 +331,12 @@ function construirTablaM(gramatica, primero, siguiente, terminales) {
             console.log(`    Added epsilon production to tablaM[${noTerminal}][${terminal}]`);
           } else {
             console.error(`    Conflicto en M[${noTerminal}, ${terminal}] - ya existe ${tablaM[noTerminal][terminal]}`);
-            // Conflict handling logic here
+            //vaciar todo tablaM y retornar
+            errores.push(`Conflicto en M[${noTerminal}, ${terminal}] - ya existe ${tablaM[noTerminal][terminal]}`);
+           
+             
+
+            
           }
         });
       }
@@ -332,7 +344,13 @@ function construirTablaM(gramatica, primero, siguiente, terminales) {
   }
 
   console.log("Final tablaM:", JSON.stringify(tablaM, null, 2));
-  return tablaM;
+  console.log(tablaM);
+  if (errores.length > 0) {
+    return {}
+  }else{
+    return tablaM;
+  }
+
 }
 
  /*************************************************************/

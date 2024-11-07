@@ -217,7 +217,17 @@ const AnalyzerPage = () => {
 
             ¡No se puede hacer la tabla M con esas producciones!
 
-            </p> </div> :  <MTable mData={mTable} terminalOrder={terminalOrder} />}
+            </p> </div> : <> 
+
+            {Object.keys(mTable).length === 0 ? <div className={classes.container_aviso}> <p className={classes.aviso}>
+            ¡No se puede hacer la tabla M la gramática no es LL  y por lo tanto, no se puede hacer la tabla M!
+
+            </p> </div> :
+
+            
+            <MTable mData={mTable} terminalOrder={terminalOrder} />  
+            }
+            </>}
            </>}
 
             
@@ -234,6 +244,11 @@ const AnalyzerPage = () => {
               ¡No se puede hacer el analisis con esa gramatica!
   
               </p> </div> :  <>
+              
+              {Object.keys(mTable).length === 0 ? <div className={classes.container_aviso}> <p className={classes.aviso}>
+              ¡No se puede hacer el análisis la gramática no es LL  y por lo tanto, no se puede hacer el análisis sintáctico!
+
+              </p> </div> : <>
              <h2 className={classes.titulo_input}>Cadena a probar:</h2>
              <input
                type="text"
@@ -246,10 +261,15 @@ const AnalyzerPage = () => {
                Analizar
              </button>
              <ASDTable parsingResults={parsingResults} />
-             </>}
              </>
+             
+             
+              }
+              </>
+          
             }
-       
+          </>
+        }
       </div>
     </div>
   );
