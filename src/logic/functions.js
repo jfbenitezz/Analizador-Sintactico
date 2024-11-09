@@ -293,17 +293,17 @@ function calcularPrimeroProduccion(gramatica, produccion, primeros) {
     // Get PRIMERO(simbolo) and ensure it’s a Set
     const simboloPrimero = primeros[simbolo] instanceof Set ? primeros[simbolo] : new Set(primeros[simbolo]);
 
+    console.log(`  PRIMERO(${simbolo}):`, simboloPrimero);
+
     // Add all items from `simboloPrimero` to `conjuntoPrimero`, excluding epsilon (`&`)
     for (const item of simboloPrimero) {
-      if (item !== '&') conjuntoPrimero.add(item);
+      conjuntoPrimero.add(item);
     }
 
     // Stop if `simboloPrimero` does not contain epsilon (`&`)
     if (!simboloPrimero.has('&')) {
       break
     
-    }else{
-      conjuntoPrimero.add('$');
     }
   }
 
@@ -341,6 +341,7 @@ function construirTablaM(gramatica, primero, siguiente, terminales) {
       // Calculate `PRIMERO` for the production
       const conjuntoPrimero = calcularPrimeroProduccion(gramatica, produccion, primero);
       console.log(`  Calculated PRIMERO for ${produccion}:`, conjuntoPrimero);
+      
 
       // Add production to `M[noTerminal, terminal]` for each terminal in `PRIMERO`
       conjuntoPrimero.forEach((terminal) => {
@@ -366,6 +367,7 @@ function construirTablaM(gramatica, primero, siguiente, terminales) {
       if (conjuntoPrimero.has('&')) {
         console.log(`    Epsilon detected in PRIMERO for ${produccion}, checking SIGUIENTE...`);
         siguiente[noTerminal].forEach((terminal) => {
+          console.log(`    Processing terminal: ${terminal}`);
           if (tablaM[noTerminal][terminal] === '') {
             tablaM[noTerminal][terminal] = '&'; // Explicit empty production for epsilon
             console.log(`    Added epsilon production to tablaM[${noTerminal}][${terminal}]`);
