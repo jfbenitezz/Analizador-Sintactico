@@ -179,65 +179,99 @@ function calcularPrimero(gramatica, simbolo, primeros = {}) {
     return primeros[simbolo];
   }
   // Calculate the FOLLOW set
-function calcularSiguiente(gramatica, simboloInicial, terminales) {
-  const siguientes = Object.keys(gramatica).reduce((acc, key) => {
-    acc[key] = [];
-    return acc;
-  }, {});
-  siguientes[simboloInicial].push("$");
-
-  let cambios = true;
-  while (cambios) {
-    cambios = false;
-    for (const [noTerminal, producciones] of Object.entries(gramatica)) {
-      for (const produccion of producciones) {
-        const produccionSimbolos = [];
-        // Manual symbol extraction based on terminals provided
-        for (let i = 0; i < produccion.length; i++) {
-          const simbolo = produccion[i];
-          if (simbolo.toUpperCase() === simbolo) {  // Uppercase symbols are non-terminals
-            produccionSimbolos.push(simbolo);
-          } else if (terminales.includes(simbolo)) { // Check against terminal list
-            produccionSimbolos.push(simbolo);
+  function calcularSiguiente(gramatica, simboloInicial, terminales) {
+    const siguientes = Object.keys(gramatica).reduce((acc, key) => {
+      acc[key] = [];
+      return acc;
+    }, {});
+    siguientes[simboloInicial].push("$");
+  
+    let cambios = true;
+    while (cambios) {
+      cambios = false;
+      for (const [noTerminal, producciones] of Object.entries(gramatica)) {
+        for (const produccion of producciones) {
+          const produccionSimbolos = [];
+          
+          // Extracción de símbolos en la producción basada en la lista de terminales
+          for (let i = 0; i < produccion.length; i++) {
+            const simbolo = produccion[i];
+            if (simbolo.toUpperCase() === simbolo) {  // Símbolos en mayúsculas son no terminales
+              produccionSimbolos.push(simbolo);
+            } else if (terminales.includes(simbolo)) { // Símbolos en la lista de terminales
+              produccionSimbolos.push(simbolo);
+            }
           }
-        }
-
-        // Calculate FOLLOW set for each non-terminal in the production
-        for (let i = 0; i < produccionSimbolos.length; i++) {
-          const simbolo = produccionSimbolos[i];
-          if (gramatica[simbolo]) { // Only process if it's a non-terminal
-            const siguienteTemporal = [];
-
-            // If there is a next symbol, add its FIRST set to FOLLOW
-            if (i + 1 < produccionSimbolos.length) {
-              const siguienteSimbolo = produccionSimbolos[i + 1];
-              const primeroSiguiente = calcularPrimero(gramatica, siguienteSimbolo, {});
-              primeroSiguiente.forEach(sym => {
-                if (sym !== "&" && !siguienteTemporal.includes(sym)) siguienteTemporal.push(sym);
-              });
-            }
-
-            // If it's the last symbol or the next symbol's FIRST contains epsilon
-            if (i + 1 === produccionSimbolos.length || calcularPrimero(gramatica, produccionSimbolos[i + 1], {}).includes("&")) {
-              siguientes[noTerminal].forEach(sym => {
-                if (!siguienteTemporal.includes(sym)) siguienteTemporal.push(sym);
-              });
-            }
-
-            // Update FOLLOW set if there are new elements
-            siguienteTemporal.forEach(sym => {
-              if (!siguientes[simbolo].includes(sym)) {
-                siguientes[simbolo].push(sym);
-                cambios = true;
+  
+          // Calcular el conjunto SIGUIENTE para cada símbolo en la producción
+          for (let i = 0; i < produccionSimbolos.length; i++) {
+            const simbolo = produccionSimbolos[i];
+            if (gramatica[simbolo]) {  // Solo procesar si el símbolo es un no terminal
+              const siguienteTemporal = [];
+  
+              // Si no es el último símbolo, agregar PRIMERO de lo que sigue
+              if (i + 1 < produccionSimbolos.length) {
+                let siguienteSimbolo = produccionSimbolos[i + 1];
+                let primeroSiguiente = calcularPrimero(gramatica, siguienteSimbolo, {});
+  
+                // Agregar PRIMERO del siguiente símbolo, excluyendo epsilon
+                primeroSiguiente.forEach(sym => {
+                  if (sym !== "&" && !siguienteTemporal.includes(sym)) siguienteTemporal.push(sym);
+                });
+  
+                // Si PRIMERO del siguiente símbolo contiene epsilon, propagar SIGUIENTE
+                if (primeroSiguiente.includes("&")) {
+                  siguientes[noTerminal].forEach(sym => {
+                    if (!siguienteTemporal.includes(sym)) siguienteTemporal.push(sym);
+                  });
+  
+                  // Continuar agregando los siguientes símbolos si contienen epsilon
+                  let j = i + 2;
+                  while (j < produccionSimbolos.length) {
+                    siguienteSimbolo = produccionSimbolos[j];
+                    primeroSiguiente = calcularPrimero(gramatica, siguienteSimbolo, {});
+                    primeroSiguiente.forEach(sym => {
+                      if (sym !== "&" && !siguienteTemporal.includes(sym)) siguienteTemporal.push(sym);
+                    });
+  
+                    if (primeroSiguiente.includes("&")) {
+                      j++;
+                    } else {
+                      break;
+                    }
+                  }
+  
+                  // Si llegamos al final de la producción y todos los símbolos tenían epsilon
+                  if (j === produccionSimbolos.length) {
+                    siguientes[noTerminal].forEach(sym => {
+                      if (!siguienteTemporal.includes(sym)) siguienteTemporal.push(sym);
+                    });
+                  }
+                }
               }
-            });
+  
+              // Si es el último símbolo o PRIMERO contiene epsilon, agregar SIGUIENTE del no terminal
+              if (i + 1 === produccionSimbolos.length || calcularPrimero(gramatica, produccionSimbolos[i + 1], {}).includes("&")) {
+                siguientes[noTerminal].forEach(sym => {
+                  if (!siguienteTemporal.includes(sym)) siguienteTemporal.push(sym);
+                });
+              }
+  
+              // Actualizar el conjunto SIGUIENTE si hay nuevos elementos
+              siguienteTemporal.forEach(sym => {
+                if (!siguientes[simbolo].includes(sym)) {
+                  siguientes[simbolo].push(sym);
+                  cambios = true;
+                }
+              });
+            }
           }
         }
       }
     }
+    return siguientes;
   }
-  return siguientes;
-}
+  
 
  /*************************************************************/
 
@@ -249,6 +283,7 @@ function calcularPrimeroProduccion(gramatica, produccion, primeros) {
   const produccionArray = Array.isArray(produccion) ? produccion : [...produccion];
 
   for (const simbolo of produccionArray) {
+    
     // Check if the symbol is a terminal (not found in `primeros`)
     if (!primeros.hasOwnProperty(simbolo)) {
       conjuntoPrimero.add(simbolo);
@@ -264,7 +299,12 @@ function calcularPrimeroProduccion(gramatica, produccion, primeros) {
     }
 
     // Stop if `simboloPrimero` does not contain epsilon (`&`)
-    if (!simboloPrimero.has('&')) break;
+    if (!simboloPrimero.has('&')) {
+      break
+    
+    }else{
+      conjuntoPrimero.add('$');
+    }
   }
 
   // If all symbols in `produccionArray` can lead to epsilon, add epsilon (`&`) to `conjuntoPrimero`
